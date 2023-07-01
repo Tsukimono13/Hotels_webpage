@@ -35,9 +35,12 @@ type HotelStateType = {
 const MainPage = () => {
     const [hotels, setHotels] = useState<HotelType[]>([]);
     const [hotelStates, setHotelStates] = useState<HotelStateType>({});
+    const [searchCountry, setSearchCountry] = useState('')
+    const [filterTypes, setFilterTypes] = useState<string[]>([]);
+    const [filteredHotels, setFilteredHotels] = useState<HotelType[]>([]);
+    const [reviewNumber, setReviewNumber] = useState<number>(0)
 
-    const [applyFilters, setApplyFilters] = useState(false);
-
+    console.log(filterTypes)
 
     useEffect(() => {
         const fetchData = async () => {
@@ -77,9 +80,13 @@ const MainPage = () => {
         return reviewsAmount + reviewWord;
     }
 
-    const applyFiltersHandler = () => {
-        //const filteredHotels = hotels.filter((hotel) => selectedTypes.includes(hotel.type));
-        setApplyFilters(true);
+    const handleApplyFilter = () => {
+        debugger
+        const filtered = hotels.filter((hotel: HotelType) =>
+            (filterTypes.length === 0 || filterTypes.includes(hotel.type)) &&
+            (reviewNumber === 0 || hotel.reviews_amount >= reviewNumber)
+        );
+        setFilteredHotels(filtered);
     };
 
 
@@ -88,46 +95,74 @@ const MainPage = () => {
             <Container>
                 <Wrapper>
                     <div>
-                        <SearchInput hotels={hotels}/>
+                        <SearchInput searchCountry={searchCountry} setSearchCountry={setSearchCountry}/>
                         <div>
-                            <CheckboxType/>
+                            <CheckboxType filterTypes={filterTypes} setFilterTypes={setFilterTypes}/>
                         </div>
                         <RatingCheckbox/>
-                        <ReviewNumberFilter/>
+                        <ReviewNumberFilter setReviewNumber={setReviewNumber}/>
                         <RangeFilter/>
-                        <ConfirmBtn>Применить фильтр</ConfirmBtn>
+                        <ConfirmBtn onClick={handleApplyFilter}>Применить фильтр</ConfirmBtn>
                         <CanselBtn><img src={deleteBtn}/>Очистить фильтр</CanselBtn>
                     </div>
 
                     <Suggestions>
-                        {hotels.map((hotel: HotelType) => (
-                            <SuggestionContainer key={hotel.name}>
-                                <InfoBox>
-                                    <HotelTitle>{hotel.name}</HotelTitle>
-                                    <DescriptionBox>
-                                        <StarsRating hotel={hotel}/>
-                                        <TypeText>{hotel.type}</TypeText>
-                                        <Dot></Dot>
-                                        <Review>{getReviewNumbers(hotel.reviews_amount)}</Review>
-                                        <Location><img src={location}/>{hotel.country}</Location>
-                                    </DescriptionBox>
-                                    <HotelDescription>{hotel.description}</HotelDescription>
-                                </InfoBox>
-                                <BookingBox>
-                                    <Price>{Math.round(hotel.min_price).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} ₽</Price>
-                                    <PerNight>Цена за 1 ночь</PerNight>
-                                    {hotelStates[hotel.name] ? (
-                                        <BookedButton onClick={() => onClickIsBook(hotel.name)}>
-                                            <img src={tick} alt="booked"/>Забронировано
-                                        </BookedButton>
-                                    ) : (
-                                        <BookButton onClick={() => onClickIsBook(hotel.name)}>
-                                            <img src={book} alt="book"/>Забронировать
-                                        </BookButton>
-                                    )}
-                                </BookingBox>
-                            </SuggestionContainer>
-                        ))}
+                        {filterTypes.length === 0 ? (
+                            hotels.map((hotel: HotelType) => (
+                                <SuggestionContainer key={hotel.name}>
+                                    <InfoBox>
+                                        <HotelTitle>{hotel.name}</HotelTitle>
+                                        <DescriptionBox>
+                                            <StarsRating hotel={hotel}/>
+                                            <TypeText>{hotel.type}</TypeText>
+                                            <Dot></Dot>
+                                            <Review>{getReviewNumbers(hotel.reviews_amount)}</Review>
+                                            <Location><img src={location}/>{hotel.country}</Location>
+                                        </DescriptionBox>
+                                        <HotelDescription>{hotel.description}</HotelDescription>
+                                    </InfoBox>
+                                    <BookingBox>
+                                        <Price>{Math.round(hotel.min_price).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} ₽</Price>
+                                        <PerNight>Цена за 1 ночь</PerNight>
+                                        {hotelStates[hotel.name] ? (
+                                            <BookedButton onClick={() => onClickIsBook(hotel.name)}>
+                                                <img src={tick} alt="booked"/>Забронировано
+                                            </BookedButton>
+                                        ) : (
+                                            <BookButton onClick={() => onClickIsBook(hotel.name)}>
+                                                <img src={book} alt="book"/>Забронировать
+                                            </BookButton>
+                                        )}
+                                    </BookingBox>
+                                </SuggestionContainer>
+                            ))) : (
+                            filteredHotels.map((hotel: HotelType) => (<SuggestionContainer key={hotel.name}>
+                                    <InfoBox>
+                                        <HotelTitle>{hotel.name}</HotelTitle>
+                                        <DescriptionBox>
+                                            <StarsRating hotel={hotel}/>
+                                            <TypeText>{hotel.type}</TypeText>
+                                            <Dot></Dot>
+                                            <Review>{getReviewNumbers(hotel.reviews_amount)}</Review>
+                                            <Location><img src={location}/>{hotel.country}</Location>
+                                        </DescriptionBox>
+                                        <HotelDescription>{hotel.description}</HotelDescription>
+                                    </InfoBox>
+                                    <BookingBox>
+                                        <Price>{Math.round(hotel.min_price).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} ₽</Price>
+                                        <PerNight>Цена за 1 ночь</PerNight>
+                                        {hotelStates[hotel.name] ? (
+                                            <BookedButton onClick={() => onClickIsBook(hotel.name)}>
+                                                <img src={tick} alt="booked"/>Забронировано
+                                            </BookedButton>
+                                        ) : (
+                                            <BookButton onClick={() => onClickIsBook(hotel.name)}>
+                                                <img src={book} alt="book"/>Забронировать
+                                            </BookButton>
+                                        )}
+                                    </BookingBox>
+                                </SuggestionContainer>
+                            )))}
                     </Suggestions>
                 </Wrapper>
             </Container>
@@ -159,6 +194,7 @@ const ConfirmBtn = styled.button`
   color: #FFFFFF;
   background: #6A53F5;
   margin: 40px 0 15px;
+  cursor: pointer;
 `
 const CanselBtn = styled.button`
   width: 324px;

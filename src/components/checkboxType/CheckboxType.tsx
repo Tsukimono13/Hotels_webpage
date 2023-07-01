@@ -2,14 +2,23 @@ import React, {useState} from 'react';
 import {FilterContainer} from "components/filterContainer/FilterContainer";
 import styled from "styled-components";
 
-const CheckboxType = () => {
-    const [checkedType, setCheckedType] = useState(false)
+type PropsType = {
+    filterTypes: string[]
+    setFilterTypes: React.Dispatch<React.SetStateAction<string[]>>;
+}
+const CheckboxType:React.FC<PropsType> = ({filterTypes, setFilterTypes}) => {
 
 
-    const changeTypeHandler = (event: any) => {
-        const isChecked = event.target.checked;
-        setCheckedType(isChecked)
-    }
+
+    const handleCheckboxChange = (type: string) => {
+        setFilterTypes((prevFilterTypes) => {
+            if (prevFilterTypes.includes(type)) {
+                return prevFilterTypes.filter((item) => item !== type);
+            } else {
+                return [...prevFilterTypes, type];
+            }
+        });
+    };
 
     return (
         <>
@@ -18,14 +27,16 @@ const CheckboxType = () => {
                 <ul>
                     <li>
                         <label>
-                            <Checkbox type="checkbox" value="Апартаменты" onChange={changeTypeHandler}/>
+                            <Checkbox type="checkbox" checked={filterTypes.includes('Апартаменты')}
+                                      onChange={() => handleCheckboxChange("Апартаменты")}/>
                             Апартаменты
                         </label>
                     </li>
                     <hr/>
                     <li>
                         <label>
-                            <Checkbox type="checkbox" value="Отель" onChange={changeTypeHandler}/>
+                            <Checkbox type="checkbox"  checked={filterTypes.includes('Отель')}
+                                      onChange={() => handleCheckboxChange("Отель")}/>
                             Отель
                         </label>
                     </li>

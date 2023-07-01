@@ -4,40 +4,40 @@ import search from "assets/search.svg";
 import {FilterContainer} from "components/filterContainer/FilterContainer";
 import styled from "styled-components";
 import {HotelType} from "sections/MainPage";
-import Select from "components/selector/select";
 
-type Country = {
-    label: string;
-    value: string;
-};
+
+
 
 type PropsType = {
-    hotels: HotelType[]
+    searchCountry: string
+    setSearchCountry: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
-const country = [{ label: 'Африка', value: 'африка' }, { label: 'Греция', value: 'греция' }]
+const country = ["Африка", "Греция", "Тропики"]
 
-const SearchInput: React.FC<PropsType> = () => {
+const SearchInput: React.FC<PropsType> = ({searchCountry, setSearchCountry}) => {
+    const searchChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+        console.log(setSearchCountry(event.target.value))
+    };
+
+    const filteredCountries = searchCountry
+        ? country.filter((c) =>
+            c.toLowerCase().includes(searchCountry.toLowerCase())
+        )
+        : country;
     return (
         <>
             <FilterTitle>Страна</FilterTitle>
-            <CustomInput placeholder={'Поиск стран'} paddingL={'33px'} marginB={'0px'}/>
+            <CustomInput placeholder={'Поиск стран'} paddingL={'33px'} marginB={'0px'} onChange={searchChangeHandler}/>
             <SearchImg src={search}/>
             <FilterContainer margin={'10px 0px 25px'}>
-                <ul className="product-list">
-                    <li>
-                        <label>
-                            <Checkbox type="checkbox"/>
-                            Африка
-                        </label>
-                    </li>
-                    <hr/>
-                    <li>
-                        <label>
-                            <Checkbox type="checkbox"/>
-                            Греция
-                        </label>
-                    </li>
+                <ul>
+                    {filteredCountries.map((c, i)=><li key={i}>
+                            <label>
+                                <Checkbox type="checkbox"/>
+                                {c}
+                            </label>
+                        </li>)}
                 </ul>
             </FilterContainer>
         </>
