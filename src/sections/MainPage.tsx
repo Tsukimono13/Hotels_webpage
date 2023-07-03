@@ -34,13 +34,19 @@ type HotelStateType = {
 
 const MainPage = () => {
     const [hotels, setHotels] = useState<HotelType[]>([]);
+
     const [hotelStates, setHotelStates] = useState<HotelStateType>({});
-    const [searchCountry, setSearchCountry] = useState('')
+
+
+    const [selectedCountries, setSelectedCountries] = useState<string[]>([]);
+
     const [filterTypes, setFilterTypes] = useState<string[]>([]);
-    const [filteredHotels, setFilteredHotels] = useState<HotelType[]>([]);
+    const [filteredHotels, setFilteredHotels] = useState<HotelType[]>(hotels);
+
     const [reviewNumber, setReviewNumber] = useState<number>(0)
 
-    console.log(filterTypes)
+    console.log(filteredHotels)
+    console.log(hotels)
 
     useEffect(() => {
         const fetchData = async () => {
@@ -49,6 +55,7 @@ const MainPage = () => {
                 if (response.status === 200) {
                     const hotelsData: HotelType[] = response.data.hotels;
                     setHotels(hotelsData);
+                    setFilteredHotels(hotelsData)
                 } else {
                     console.log('Ошибка при получении данных');
                 }
@@ -80,13 +87,16 @@ const MainPage = () => {
         return reviewsAmount + reviewWord;
     }
 
+
     const handleApplyFilter = () => {
-        debugger
-        const filtered = hotels.filter((hotel: HotelType) =>
-            (filterTypes.length === 0 || filterTypes.includes(hotel.type)) &&
-            (reviewNumber === 0 || hotel.reviews_amount >= reviewNumber)
-        );
-        setFilteredHotels(filtered);
+        if (selectedCountries.length > 0) {
+            const filtered = hotels.filter((hotel: HotelType) =>
+                selectedCountries.includes(hotel.country)
+            );
+            setFilteredHotels(filtered);
+        } else {
+            setFilteredHotels(hotels);
+        }
     };
 
 
@@ -95,7 +105,7 @@ const MainPage = () => {
             <Container>
                 <Wrapper>
                     <div>
-                        <SearchInput searchCountry={searchCountry} setSearchCountry={setSearchCountry}/>
+                        <SearchInput selectedCountries={selectedCountries} setSelectedCountries={setSelectedCountries}/>
                         <div>
                             <CheckboxType filterTypes={filterTypes} setFilterTypes={setFilterTypes}/>
                         </div>
@@ -107,9 +117,7 @@ const MainPage = () => {
                     </div>
 
                     <Suggestions>
-                        {filterTypes.length === 0 ? (
-                            hotels.map((hotel: HotelType) => (
-                                <SuggestionContainer key={hotel.name}>
+                        {filteredHotels.map((hotel: HotelType) => (<SuggestionContainer key={hotel.name}>
                                     <InfoBox>
                                         <HotelTitle>{hotel.name}</HotelTitle>
                                         <DescriptionBox>
@@ -135,34 +143,7 @@ const MainPage = () => {
                                         )}
                                     </BookingBox>
                                 </SuggestionContainer>
-                            ))) : (
-                            filteredHotels.map((hotel: HotelType) => (<SuggestionContainer key={hotel.name}>
-                                    <InfoBox>
-                                        <HotelTitle>{hotel.name}</HotelTitle>
-                                        <DescriptionBox>
-                                            <StarsRating hotel={hotel}/>
-                                            <TypeText>{hotel.type}</TypeText>
-                                            <Dot></Dot>
-                                            <Review>{getReviewNumbers(hotel.reviews_amount)}</Review>
-                                            <Location><img src={location}/>{hotel.country}</Location>
-                                        </DescriptionBox>
-                                        <HotelDescription>{hotel.description}</HotelDescription>
-                                    </InfoBox>
-                                    <BookingBox>
-                                        <Price>{Math.round(hotel.min_price).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} ₽</Price>
-                                        <PerNight>Цена за 1 ночь</PerNight>
-                                        {hotelStates[hotel.name] ? (
-                                            <BookedButton onClick={() => onClickIsBook(hotel.name)}>
-                                                <img src={tick} alt="booked"/>Забронировано
-                                            </BookedButton>
-                                        ) : (
-                                            <BookButton onClick={() => onClickIsBook(hotel.name)}>
-                                                <img src={book} alt="book"/>Забронировать
-                                            </BookButton>
-                                        )}
-                                    </BookingBox>
-                                </SuggestionContainer>
-                            )))}
+                            ))}
                     </Suggestions>
                 </Wrapper>
             </Container>

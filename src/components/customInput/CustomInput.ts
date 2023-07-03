@@ -13,13 +13,12 @@ export const CustomInput = styled.input<InputPropsType>`
   border-radius: 7px;
   margin-top: 14px;
   margin-bottom: ${props => props.marginB || '25px'};
-  padding-left: 13px;
+  padding-left: ${props => props.paddingL || '13px'};
   
   &::placeholder {
     font-size: 16px;
     font-weight: 400;
     line-height: 21px;
     color: #868686;
-    padding-left: ${props => props.paddingL || '7px'};
   }
 `
