@@ -1,19 +1,23 @@
 import React from 'react';
 import {CustomInput} from "components/customInput/CustomInput";
 import styled from "styled-components";
+
 type PropsType = {
-    setReviewNumber: (number: number)=> void
+    setSelectedNumReview: any
 }
-const ReviewNumberFilter:React.FC<PropsType> = ({setReviewNumber}) => {
-    const searchChangeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const value = parseInt(event.target.value, 10);
-        setReviewNumber(value);
-        debugger
+const ReviewNumberFilter: React.FC<PropsType> = ({setSelectedNumReview}) => {
+
+    const handleFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const value = Number(event.target.value);
+        setSelectedNumReview(value >= 0 ? value : null);
     };
+
     return (
         <>
             <FilterTitle>Количество отзывов (от)</FilterTitle>
-            <CustomInput placeholder={'Например, от 10'} onChange={searchChangeHandler}/>
+            <CustomInput placeholder={'Например, от 10'} type="text"
+                         min="0"
+                         onChange={handleFilterChange}/>
         </>
     );
 };

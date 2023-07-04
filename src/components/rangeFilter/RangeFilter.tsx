@@ -2,31 +2,32 @@ import React, {useState} from 'react';
 import styled from "styled-components";
 import ReactSlider from 'react-slider'
 import "./RangeFilter.css"
+import {formatPrice} from "utils/formatPrice";
 
-const MIN = 0;
-const MAX = 100500;
-const RangeFilter = () => {
-
-    const [values, setValues] = useState<[number, number]>([MIN, MAX]);
+type PropsType = {
+    selectedRangePrice: number[]
+    setSelectedRangePrice: any
+}
+const RangeFilter: React.FC<PropsType> = ({selectedRangePrice, setSelectedRangePrice}) => {
 
     const handleSliderChange = (newValues: number | number[]) => {
         if (Array.isArray(newValues)) {
-            setValues(newValues as [number, number]);
+            setSelectedRangePrice(newValues as [number, number]);
         }
     };
-    //console.log('values', values)
+
     return (
         <>
             <FilterTitle>Цена</FilterTitle>
             <RangeBox>
                 <PriceBox>
-                <Price>от {values[0]} ₽</Price><span>-</span><Price>до {values[1]} ₽</Price>
+                    <Price>от {formatPrice(selectedRangePrice[0])} ₽</Price><span>-</span><Price>до {formatPrice(selectedRangePrice[1])} ₽</Price>
                 </PriceBox>
                 <ReactSlider className={'slider'}
-                        value={values}
-                        min={MIN}
-                        max={MAX}
-                        onChange={handleSliderChange}
+                             value={selectedRangePrice}
+                             min={0}
+                             max={100500}
+                             onChange={handleSliderChange}
                 />
             </RangeBox>
         </>
@@ -45,6 +46,8 @@ const PriceBox = styled.div`
 const RangeBox = styled.div`
   width: 324px;
   margin-top: 15px;
+
+
 `
 
 const FilterTitle = styled.p`

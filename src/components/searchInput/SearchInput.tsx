@@ -1,14 +1,14 @@
 import React, {useState} from 'react';
 import {CustomInput} from "components/customInput/CustomInput";
-import search from "assets/search.svg";
+import search from "assets/icons/search.svg";
 import {FilterContainer} from "components/filterContainer/FilterContainer";
 import styled from "styled-components";
-import cross from "assets/cross.svg"
-import check from "assets/whiteCheck.svg"
+import cross from "assets/icons/cross.svg"
+import check from "assets/icons/whiteCheck.svg"
 
 
 type PropsType = {
-    selectedCountries: any
+    selectedCountries: string[]
     setSelectedCountries: any
 }
 
@@ -24,17 +24,20 @@ const SearchInput: React.FC<PropsType> = ({selectedCountries, setSelectedCountri
     const filteredCountries = country.filter((c) =>
         c.toLowerCase().includes(searchValue.toLowerCase())
     );
+
     const handleCountryCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const country = event.target.value;
         if (event.target.checked) {
             setSelectedCountries([...selectedCountries, country]);
         } else {
-            setSelectedCountries(selectedCountries.filter((c: any) => c !== country));
+            setSelectedCountries(selectedCountries.filter((c: string) => c !== country));
         }
     };
+
     const clearInput = () => {
         setSearchValue('');
     };
+
     return (
         <>
             <FilterTitle>Страна</FilterTitle>
@@ -62,9 +65,7 @@ const SearchInput: React.FC<PropsType> = ({selectedCountries, setSelectedCountri
                                             checked={selectedCountries.includes(c)}
                                             onChange={handleCountryCheckboxChange}
                                         />
-                                        <label>
-                                            {c}
-                                        </label>
+                                        <label>{c}</label>
                                     </li>
                                 </CustomCheckbox>
                             ))}
@@ -141,7 +142,7 @@ const CustomCheckbox = styled.div`
     font-weight: 400;
     line-height: 21px;
     display: flex;
-    
+
     &:hover {
       &::before {
         background: #00BB6D;

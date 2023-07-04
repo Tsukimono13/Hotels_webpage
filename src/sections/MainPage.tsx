@@ -1,10 +1,10 @@
 import React, {useEffect, useState} from 'react';
 import {Container} from "components/container/Container";
 import styled from "styled-components";
-import deleteBtn from "assets/delete.svg"
-import location from "assets/location.svg"
-import book from "assets/book.svg"
-import tick from "assets/check.svg"
+import deleteBtn from "assets/icons/delete.svg"
+import location from "assets/icons/location.svg"
+import book from "assets/icons/book.svg"
+import tick from "assets/icons/check.svg"
 import axios from "axios";
 import SearchInput from "components/searchInput/SearchInput";
 import CheckboxType from "components/checkboxType/CheckboxType";
@@ -12,6 +12,8 @@ import RatingCheckbox from "components/ratingCheckbox/RatingCheckbox";
 import RangeFilter from "components/rangeFilter/RangeFilter";
 import ReviewNumberFilter from "components/reviewNumberFilter/ReviewNumberFilter";
 import StarsRating from "components/starsRating/StarsRating";
+import {formatPrice} from "utils/formatPrice";
+import NotFound from "components/notFound/NotFound";
 
 
 export type HotelType = {
@@ -40,13 +42,14 @@ const MainPage = () => {
 
     const [selectedCountries, setSelectedCountries] = useState<string[]>([]);
 
-    const [filterTypes, setFilterTypes] = useState<string[]>([]);
-    const [filteredHotels, setFilteredHotels] = useState<HotelType[]>(hotels);
+    const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
+    const [filteredHotels, setFilteredHotels] = useState<HotelType[]>([]);
 
-    const [reviewNumber, setReviewNumber] = useState<number>(0)
+    const [selectedStars, setSelectedStars] = useState<number[]>([]);
 
-    console.log(filteredHotels)
-    console.log(hotels)
+    const [selectedNumReview, setSelectedNumReview] = useState<number | null>(null);
+
+    const [selectedRangePrice, setSelectedRangePrice] = useState<[number, number]>([0, 100500]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -61,6 +64,8 @@ const MainPage = () => {
                 }
             } catch (error) {
                 console.log('Произошла ошибка', error);
+            } finally {
+
             }
         };
 
@@ -74,6 +79,7 @@ const MainPage = () => {
             [hotelName]: !prevState[hotelName],
         }));
     };
+
     const getReviewNumbers = (reviewsAmount: number) => {
         let reviewWord;
         if (reviewsAmount % 10 === 1 && reviewsAmount % 100 !== 11) {
@@ -88,17 +94,24 @@ const MainPage = () => {
     }
 
 
-    const handleApplyFilter = () => {
-        if (selectedCountries.length > 0) {
-            const filtered = hotels.filter((hotel: HotelType) =>
-                selectedCountries.includes(hotel.country)
-            );
-            setFilteredHotels(filtered);
-        } else {
-            setFilteredHotels(hotels);
-        }
+    const handleApplyFilters = () => {
+        const filtered = hotels.filter((hotel) =>
+            (selectedCountries.length === 0 || selectedCountries.includes(hotel.country)) &&
+            (selectedTypes.length === 0 || selectedTypes.includes(hotel.type)) &&
+            (selectedStars.length === 0 || selectedStars.includes(hotel.stars)) &&
+            (selectedNumReview ? hotel.reviews_amount >= selectedNumReview : true) &&
+            (selectedRangePrice ? hotel.min_price >= selectedRangePrice[0] && hotel.min_price <= selectedRangePrice[1] : true)
+        );
+        setFilteredHotels(filtered);
     };
-
+    const handleResetFilters = () => {
+            setSelectedCountries([]);
+            setSelectedTypes([]);
+            setSelectedStars([]);
+            setSelectedNumReview(null);
+            setSelectedRangePrice([0, 100500]);
+            setFilteredHotels(hotels);
+    }
 
     return (
         <MainDiv>
@@ -107,42 +120,47 @@ const MainPage = () => {
                     <div>
                         <SearchInput selectedCountries={selectedCountries} setSelectedCountries={setSelectedCountries}/>
                         <div>
-                            <CheckboxType filterTypes={filterTypes} setFilterTypes={setFilterTypes}/>
+                            <CheckboxType selectedTypes={selectedTypes} setSelectedTypes={setSelectedTypes}/>
                         </div>
-                        <RatingCheckbox/>
-                        <ReviewNumberFilter setReviewNumber={setReviewNumber}/>
-                        <RangeFilter/>
-                        <ConfirmBtn onClick={handleApplyFilter}>Применить фильтр</ConfirmBtn>
-                        <CanselBtn><img src={deleteBtn}/>Очистить фильтр</CanselBtn>
+                        <RatingCheckbox selectedStars={selectedStars} setSelectedStars={setSelectedStars}/>
+                        <ReviewNumberFilter setSelectedNumReview={setSelectedNumReview}/>
+                        <RangeFilter selectedRangePrice={selectedRangePrice}
+                                     setSelectedRangePrice={setSelectedRangePrice}/>
+                        <ConfirmBtn onClick={handleApplyFilters}>Применить фильтр</ConfirmBtn>
+                        <CanselBtn onClick={handleResetFilters}><img src={deleteBtn}/>Очистить фильтр</CanselBtn>
                     </div>
 
                     <Suggestions>
-                        {filteredHotels.map((hotel: HotelType) => (<SuggestionContainer key={hotel.name}>
-                                    <InfoBox>
-                                        <HotelTitle>{hotel.name}</HotelTitle>
-                                        <DescriptionBox>
-                                            <StarsRating hotel={hotel}/>
-                                            <TypeText>{hotel.type}</TypeText>
-                                            <Dot></Dot>
-                                            <Review>{getReviewNumbers(hotel.reviews_amount)}</Review>
-                                            <Location><img src={location}/>{hotel.country}</Location>
-                                        </DescriptionBox>
-                                        <HotelDescription>{hotel.description}</HotelDescription>
-                                    </InfoBox>
-                                    <BookingBox>
-                                        <Price>{Math.round(hotel.min_price).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} ₽</Price>
-                                        <PerNight>Цена за 1 ночь</PerNight>
-                                        {hotelStates[hotel.name] ? (
-                                            <BookedButton onClick={() => onClickIsBook(hotel.name)}>
-                                                <img src={tick} alt="booked"/>Забронировано
-                                            </BookedButton>
-                                        ) : (
-                                            <BookButton onClick={() => onClickIsBook(hotel.name)}>
-                                                <img src={book} alt="book"/>Забронировать
-                                            </BookButton>
-                                        )}
-                                    </BookingBox>
-                                </SuggestionContainer>
+                        {filteredHotels.length === 0 ? (
+                            <NotFound handleResetFilters={handleResetFilters}/>
+                        ) : (
+                            filteredHotels.map((hotel: HotelType) => (<SuggestionContainer key={hotel.name}>
+                                        <InfoBox>
+                                            <HotelTitle>{hotel.name}</HotelTitle>
+                                            <DescriptionBox>
+                                                <StarsRating hotel={hotel}/>
+                                                <TypeText>{hotel.type}</TypeText>
+                                                <Dot></Dot>
+                                                <Review>{getReviewNumbers(hotel.reviews_amount)}</Review>
+                                                <Location><img src={location}/>{hotel.country}</Location>
+                                            </DescriptionBox>
+                                            <HotelDescription>{hotel.description}</HotelDescription>
+                                        </InfoBox>
+                                        <BookingBox>
+                                            <Price>{formatPrice(hotel.min_price)} ₽</Price>
+                                            <PerNight>Цена за 1 ночь</PerNight>
+                                            {hotelStates[hotel.name] ? (
+                                                <BookedButton onClick={() => onClickIsBook(hotel.name)}>
+                                                    <img src={tick} alt="booked"/>Забронировано
+                                                </BookedButton>
+                                            ) : (
+                                                <BookButton onClick={() => onClickIsBook(hotel.name)}>
+                                                    <img src={book} alt="book"/>Забронировать
+                                                </BookButton>
+                                            )}
+                                        </BookingBox>
+                                    </SuggestionContainer>
+                                )
                             ))}
                     </Suggestions>
                 </Wrapper>
@@ -189,11 +207,13 @@ const CanselBtn = styled.button`
   align-items: center;
   justify-content: center;
   gap: 10px;
+  cursor: pointer;
 `
 const Suggestions = styled.div`
   display: flex;
   flex-direction: column;
   margin-top: 35px;
+  cursor: pointer;
 `
 const SuggestionContainer = styled.div`
   border-radius: 7px;
