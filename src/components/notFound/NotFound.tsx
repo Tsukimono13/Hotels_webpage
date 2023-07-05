@@ -3,9 +3,9 @@ import {S} from "components/notFound/NotFound_Styles"
 import notFound from "assets/notFound.png"
 
 type PropsType = {
-    handleResetFilters: ()=>void
+    handleResetFilters: () => void
 }
-const NotFound: React.FC<PropsType> = ({handleResetFilters}) => {
+export const NotFound: React.FC<PropsType> = ({handleResetFilters}) => {
     return (
         <S.MainContainer>
             <S.ContentContainer>
@@ -19,5 +19,4 @@ const NotFound: React.FC<PropsType> = ({handleResetFilters}) => {
     );
 };
 
-export default NotFound;
 

@@ -1,23 +1,20 @@
-import React, {FC, useState} from 'react';
+import React from 'react';
 import StarRatingComponent from "react-star-rating-component";
-import {HotelType} from "sections/MainPage";
 
 type PropsType = {
-    hotel: HotelType
+    stars: number
 }
-const StarsRating:React.FC<PropsType> = ({hotel}) => {
+export const StarsRating: React.FC<PropsType> = ({stars}) => {
 
     return (
         <>
             <StarRatingComponent
                 name="rate1"
                 starCount={5}
-                value={hotel.stars}
+                value={stars}
                 starColor={'#FFA900'}
                 emptyStarColor={'#D7D7D7'}
             />
         </>
     );
 };
-
-export default StarsRating;

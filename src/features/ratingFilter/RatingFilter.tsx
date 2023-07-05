@@ -1,11 +1,10 @@
 import React from 'react';
 import {FilterContainer} from "components/filterContainer/FilterContainer";
-import styled from "styled-components";
-import check from "assets/icons/whiteCheck.svg";
+import {S} from "features/Filters_Styles"
 
 type PropsType = {
     selectedStars: number[]
-    setSelectedStars: any
+    setSelectedStars: Function
 }
 
 type StarsType = {
@@ -21,7 +20,7 @@ const stars: StarsType[] = [
     {num: 5, title: "звезд"}
 ]
 
-const RatingCheckbox: React.FC<PropsType> = ({selectedStars, setSelectedStars}) => {
+export const RatingFilter: React.FC<PropsType> = ({selectedStars, setSelectedStars}) => {
 
     const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const starNumber = parseInt(event.target.value);
@@ -33,15 +32,16 @@ const RatingCheckbox: React.FC<PropsType> = ({selectedStars, setSelectedStars}) 
             );
         }
     };
+
     return (
         <>
-            <FilterTitle>Колличество звёзд</FilterTitle>
+            <S.FilterTitle>Колличество звёзд</S.FilterTitle>
             <FilterContainer>
-                <CheckboxContainer>
+                <S.CheckboxContainer>
                     <ul>
                         {stars.map((el: StarsType, index) => (
-                            <CustomCheckbox>
-                                <li key={index}>
+                            <S.CustomCheckbox key={index}>
+                                <li>
                                     <input type="checkbox"
                                            value={el.num}
                                            checked={selectedStars.includes(el.num)}
@@ -50,80 +50,13 @@ const RatingCheckbox: React.FC<PropsType> = ({selectedStars, setSelectedStars}) 
                                         <span>{el.num} {el.title}</span>
                                     </label>
                                 </li>
-                            </CustomCheckbox>
+                            </S.CustomCheckbox>
                         ))}
                     </ul>
-                </CheckboxContainer>
+                </S.CheckboxContainer>
             </FilterContainer>
         </>
     );
 };
 
-export default RatingCheckbox;
 
-const FilterTitle = styled.p`
-  font-size: 16px;
-  font-weight: 700;
-  line-height: 21px;
-  text-align: left;
-  width: 324px;
-`
-const CheckboxContainer = styled.div`
-  margin: 24px 0 0 20px;
-`
-const CustomCheckbox = styled.div`
-  display: flex;
-  align-items: center;
-  margin-bottom: 15px;
-  width: 18px;
-  height: 18px;
-
-  input {
-    opacity: 0;
-    position: absolute;
-    display: flex;
-    cursor: pointer;
-  }
-
-  input:checked {
-    & + label::before {
-      content: url(${check});
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: #00BB6D;
-    }
-  }
-
-
-  label {
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: 400;
-    line-height: 21px;
-    display: flex;
-
-    span {
-      white-space: nowrap;
-    }
-
-    &:hover {
-      &::before {
-        background: #00BB6D;
-      }
-    }
-  }
-
-  label::before {
-    content: "";
-    border: 1px solid #CDCDCD;
-    width: 18px;
-    height: 18px;
-    border-radius: 15%;
-    margin-right: 11px;
-  }
-
-  input:hover + label::before {
-    background: #00BB6D;
-  }
-`;
