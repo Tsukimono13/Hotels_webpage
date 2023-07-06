@@ -11,9 +11,16 @@ export const ReviewNumberFilter: React.FC<PropsType> = ({setSelectedNumReview, s
 
     const handleFilterChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value;
-        const roundedValue = Math.round(Number(value));
-        setSelectedNumReview(Number(value) >= 0 ? roundedValue : null);
-        setReviewInputValue(value);
+        setSelectedNumReview(Number(value) >= 0 ? Number(value) : null);
+        setReviewInputValue(value)
+    };
+
+    const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        const { key } = event;
+        const isNumericKey = /^\d$/.test(key);
+        if (!isNumericKey) {
+            event.preventDefault();
+        }
     };
 
     return (
@@ -23,6 +30,7 @@ export const ReviewNumberFilter: React.FC<PropsType> = ({setSelectedNumReview, s
                          min="0"
                          onChange={handleFilterChange}
                          value={reviewInputValue}
+                         onKeyPress={handleKeyPress}
             />
         </>
     );
