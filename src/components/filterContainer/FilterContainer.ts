@@ -12,5 +12,4 @@ export const FilterContainer = styled.div<ContainerPropsType>`
   margin: ${props => props.margin || '13px 0 26px'};
   border-radius: 15px;
   border: 1px solid #EAEAEA;
-  overflow: auto;
 `

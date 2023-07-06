@@ -14,3 +14,7 @@ export type HotelType = {
     last_review: string;
 }
 
+export type OptionsType = {
+    value: string
+    label: string
+}

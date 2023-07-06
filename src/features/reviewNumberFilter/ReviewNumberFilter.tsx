@@ -1,5 +1,5 @@
 import React from 'react';
-import {CustomInput} from "components/customInput/CustomInput";
+import {CustomInput} from "components";
 import {S} from "features/Filters_Styles"
 
 type PropsType = {

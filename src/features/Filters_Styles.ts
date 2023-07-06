@@ -12,34 +12,7 @@ const FilterTitle = styled.p`
 const CheckboxContainer = styled.div`
   margin: 24px 0 0 20px;
 `
-const StyledHr = styled.hr`
-  border: none;
-  border-top: 1px solid #EAEAEA;
-  width: 284px;
-  margin-bottom: 15px;
-`
-const SearchImg = styled.img`
-  position: absolute;
-  z-index: 9999;
-  top: 50px;
-  left: 15px;
-`
 
-const ErrorText = styled.p`
-  font-size: 16px;
-  font-weight: 400;
-  line-height: 24px;
-  color: #868686;
-  text-align: center;
-  width: 228px;
-  margin: 77px 25px;
-`
-const ClearButton = styled.button`
-  position: absolute;
-  cursor: pointer;
-  top: 54px;
-  left: 25%;
-`
 const CustomCheckbox = styled.div`
   display: flex;
   align-items: center;
@@ -94,4 +67,4 @@ const CustomCheckbox = styled.div`
     background: #00BB6D;
   }
 `
-export const S = {FilterTitle, CheckboxContainer, StyledHr, CustomCheckbox, SearchImg, ErrorText, ClearButton}
+export const S = {FilterTitle, CheckboxContainer, CustomCheckbox}

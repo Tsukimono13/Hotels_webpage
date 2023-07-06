@@ -1,5 +1,5 @@
 import React from 'react';
-import {FilterContainer} from "components/filterContainer/FilterContainer";
+import {FilterContainer} from "components";
 import {S} from "features/Filters_Styles"
 
 type PropsType = {

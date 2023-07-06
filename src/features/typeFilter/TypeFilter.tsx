@@ -1,26 +1,38 @@
 import React from 'react';
 import {S} from "features/Filters_Styles"
-import {FilterContainer} from "components";
-import {CheckboxType} from "features/typeFilter/typeCheckbox/TypeCheckbox";
+import {customStyles} from "styles/customStylesForSelect";
+import ReactSelect from "react-select";
+import {OptionsType} from "pages/main/MainPage_Types";
 
 type PropsType = {
-    selectedTypes: string[]
-    setSelectedTypes: (selectedTypes: string[]) => void
+    setSelectedType: (selectedType: string[]) => void
+    valueType: OptionsType | null
+    setValueType: (value: OptionsType | null) => void
 }
 
-export const TypeFilter: React.FC<PropsType> = ({selectedTypes, setSelectedTypes}) => {
+const types: OptionsType[] = [
+    {value: 'апартаменты', label: 'Апартаменты'},
+    {value: 'отель', label: 'Отель'},
+]
+export const TypeFilter: React.FC<PropsType> = ({setSelectedType, valueType, setValueType}) => {
+
+    const handleSelectType = (selectedOptions: any) => {
+        const value = selectedOptions?.map((option: OptionsType) => option.value) || []
+        setSelectedType(value);
+        setValueType(selectedOptions)
+    };
+
     return (
         <>
             <S.FilterTitle>Тип</S.FilterTitle>
-            <FilterContainer height={'120px'}>
-                <S.CheckboxContainer>
-                    <ul>
-                        <CheckboxType value={"Апартаменты"} selectedTypes={selectedTypes} setSelectedTypes={setSelectedTypes}/>
-                        <S.StyledHr/>
-                        <CheckboxType value={"Отель"} selectedTypes={selectedTypes} setSelectedTypes={setSelectedTypes}/>
-                    </ul>
-                </S.CheckboxContainer>
-            </FilterContainer>
+            <ReactSelect
+                options={types}
+                placeholder="Выберите тип..."
+                styles={customStyles}
+                onChange={handleSelectType}
+                isMulti={true}
+                value={valueType}
+            />
         </>
     );
 };

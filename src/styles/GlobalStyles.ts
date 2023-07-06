@@ -8,7 +8,6 @@ export const GlobalStyles = createGlobalStyle`
     padding: 0;
     box-sizing: border-box;
     font-family: 'PT Sans', sans-serif;
-    //color: #3A3A3A;
   }
 
   body {

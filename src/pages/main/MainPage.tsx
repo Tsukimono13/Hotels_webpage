@@ -1,39 +1,29 @@
 import React, {useEffect, useState} from 'react';
-import {Container} from "components/container/Container";
+import {HotelType, OptionsType} from "pages/main/MainPage_Types";
+import {S} from "pages/main/MainPage_Styles"
+import {Container} from "components";
 import deleteBtn from "assets/icons/delete.svg"
 import axios from "axios";
-import {CountryFilter} from "features/countryFilter/CountryFilter";
-import {RatingFilter} from "features/ratingFilter/RatingFilter";
-import {RangePriceFilter} from "features/rangePriceFilter/RangePriceFilter";
-import {ReviewNumberFilter} from "features/reviewNumberFilter/ReviewNumberFilter";
+import {CountryFilter} from "features";
+import {RatingFilter} from "features";
+import {RangePriceFilter} from "features";
+import {ReviewNumberFilter} from "features";
 import {NotFound} from "components";
-import {AdvertisementsBlock} from "components";
-import {HotelType} from "pages/main/MainPage_Types";
-import {S} from "pages/main/MainPage_Styles"
-import {TypeFilter} from "features/typeFilter/TypeFilter";
-import ReactPaginate from 'react-paginate';
-import styled from "styled-components";
-import Pagination from "components/pagination/Pagination";
+import {TypeFilter} from "features";
+import {Pagination} from "components";
 
 
-const MainPage = () => {
+export const MainPage = () => {
     const [hotels, setHotels] = useState<HotelType[]>([]);
-    const [selectedCountries, setSelectedCountries] = useState<string[]>([]);
-    const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
+    const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
+    const [inputValue, setInputValue] = useState<OptionsType | null>(null);
+    const [selectedType, setSelectedType] = useState<string[]>([]);
     const [filteredHotels, setFilteredHotels] = useState<HotelType[]>([]);
     const [selectedStars, setSelectedStars] = useState<number[]>([]);
     const [selectedNumReview, setSelectedNumReview] = useState<number | null>(null);
     const [reviewInputValue, setReviewInputValue] = useState('')
     const [selectedRangePrice, setSelectedRangePrice] = useState<[number, number]>([0, 100500]);
-
-    const [currentPage, setCurrentPage] = useState<number>(0);
-    const countItems = 3;
-
-    const paginatedHotels = filteredHotels.slice(
-        currentPage * countItems,
-        currentPage * countItems + countItems
-    );
-
+    const [valueType, setValueType] = useState<OptionsType | null>(null);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -54,11 +44,10 @@ const MainPage = () => {
         fetchData();
     }, []);
 
-
     const handleApplyFilters = () => {
         const filtered = hotels.filter((hotel) =>
-            (selectedCountries.length === 0 || selectedCountries.includes(hotel.country)) &&
-            (selectedTypes.length === 0 || selectedTypes.includes(hotel.type)) &&
+            (selectedCountry ? hotel.country.toLowerCase() === selectedCountry : true) &&
+            (selectedType.length === 0 || selectedType.includes(hotel.type.toLowerCase())) &&
             (selectedStars.length === 0 || selectedStars.includes(hotel.stars)) &&
             (selectedNumReview ? hotel.reviews_amount >= selectedNumReview : true) &&
             (selectedRangePrice ? hotel.min_price >= selectedRangePrice[0] && hotel.min_price <= selectedRangePrice[1] : true)
@@ -67,8 +56,10 @@ const MainPage = () => {
     };
 
     const handleResetFilters = () => {
-        setSelectedCountries([]);
-        setSelectedTypes([]);
+        setSelectedCountry(null);
+        setInputValue(null)
+        setValueType(null)
+        setSelectedType([]);
         setSelectedStars([]);
         setSelectedNumReview(null);
         setReviewInputValue('');
@@ -82,16 +73,18 @@ const MainPage = () => {
                 <S.Wrapper>
                     <div>
                         <CountryFilter
-                            selectedCountries={selectedCountries}
-                            setSelectedCountries={setSelectedCountries}
-                        />
-                        <TypeFilter
-                            selectedTypes={selectedTypes}
-                            setSelectedTypes={setSelectedTypes}
+                            setSelectedCountry={setSelectedCountry}
+                            inputValue={inputValue}
+                            setInputValue={setInputValue}
                         />
                         <RatingFilter
                             selectedStars={selectedStars}
                             setSelectedStars={setSelectedStars}
+                        />
+                        <TypeFilter
+                            setSelectedType={setSelectedType}
+                            valueType={valueType}
+                            setValueType={setValueType}
                         />
                         <ReviewNumberFilter
                             setSelectedNumReview={setSelectedNumReview}
@@ -114,22 +107,14 @@ const MainPage = () => {
                         {filteredHotels.length === 0 ? (
                             <NotFound handleResetFilters={handleResetFilters}/>
                         ) : (
-                            paginatedHotels.map((hotel: HotelType) => (
-                                    <AdvertisementsBlock key={hotel.name} hotel={hotel}/>
-                                )
-                            ))}
-                        <Pagination
-                            filteredHotels={filteredHotels}
-                            setCurrentPage={setCurrentPage}
-                            countItems={countItems}/>
+                            <Pagination filteredHotels={filteredHotels}/>
+                        )}
                     </S.Advertisements>
                 </S.Wrapper>
             </Container>
         </S.Main>
     );
 };
-
-export default MainPage;
 
 
 
