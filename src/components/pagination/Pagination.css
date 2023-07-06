@@ -1,0 +1,45 @@
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin: 40px 0;
+    align-items: center;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 24px;
+    color: #3A3A3A;
+}
+
+.pagination .active {
+    color: #6A53F5;
+    background: rgba(106, 83, 245, 0.1);
+}
+
+.active {
+    width: 40px;
+    height: 40px;
+    border-radius: 2px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.page {
+    width: 40px;
+    height: 40px;
+    border-radius: 2px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 24px;
+    color: #3A3A3A;
+}
+
+.disable {
+    color: #DBDBDB;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 24px;
+}

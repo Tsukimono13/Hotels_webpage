@@ -13,8 +13,9 @@ import {S} from "pages/main/MainPage_Styles"
 import {TypeFilter} from "features/typeFilter/TypeFilter";
 import ReactPaginate from 'react-paginate';
 import styled from "styled-components";
+import Pagination from "components/pagination/Pagination";
 
-const countItems = 3;
+
 const MainPage = () => {
     const [hotels, setHotels] = useState<HotelType[]>([]);
     const [selectedCountries, setSelectedCountries] = useState<string[]>([]);
@@ -26,14 +27,13 @@ const MainPage = () => {
     const [selectedRangePrice, setSelectedRangePrice] = useState<[number, number]>([0, 100500]);
 
     const [currentPage, setCurrentPage] = useState<number>(0);
+    const countItems = 3;
 
     const paginatedHotels = filteredHotels.slice(
         currentPage * countItems,
         currentPage * countItems + countItems
     );
-    const handlePageChange = (selectedPage: { selected: number }) => {
-        setCurrentPage(selectedPage.selected);
-    };
+
 
     useEffect(() => {
         const fetchData = async () => {
@@ -118,20 +118,10 @@ const MainPage = () => {
                                     <AdvertisementsBlock key={hotel.name} hotel={hotel}/>
                                 )
                             ))}
-                        <PaginationContainer>
-                            <ReactPaginate
-                                previousLabel={'previous'}
-                                nextLabel={'next'}
-                                breakLabel={'...'}
-                                breakClassName={'break-me'}
-                                pageCount={Math.ceil(filteredHotels.length / countItems)}
-                                marginPagesDisplayed={2}
-                                pageRangeDisplayed={5}
-                                onPageChange={handlePageChange}
-                                containerClassName={'pagination'}
-                                activeClassName={'active'}
-                            />
-                        </PaginationContainer>
+                        <Pagination
+                            filteredHotels={filteredHotels}
+                            setCurrentPage={setCurrentPage}
+                            countItems={countItems}/>
                     </S.Advertisements>
                 </S.Wrapper>
             </Container>
@@ -142,13 +132,5 @@ const MainPage = () => {
 export default MainPage;
 
 
-const PaginationContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  margin: 20px 0;
-`;
 
-const ActivePage = styled.span`
-  color: red;
-  font-weight: bold;
-`;
+
