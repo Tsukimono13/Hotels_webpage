@@ -8,7 +8,7 @@ const Wrapper = styled.div`
   display: flex;
   gap: 40px;
   height: 100%;
-  margin: 91px 0 35px;
+  margin: 40px 0 35px;
   position: relative;
 `
 const ConfirmBtn = styled.button`
