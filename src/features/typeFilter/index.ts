@@ -1,0 +1,1 @@
+export {CheckboxType} from "./typeCheckbox/TypeCheckbox"

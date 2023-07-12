@@ -1,29 +1,26 @@
 import React, {useEffect, useState} from 'react';
-import {HotelType, OptionsType} from "pages/main/MainPage_Types";
-import {S} from "pages/main/MainPage_Styles"
 import {Container} from "components";
 import deleteBtn from "assets/icons/delete.svg"
 import axios from "axios";
 import {CountryFilter} from "features";
-import {RatingFilter} from "features";
+import {RatingFilter} from "features/";
 import {RangePriceFilter} from "features";
 import {ReviewNumberFilter} from "features";
 import {NotFound} from "components";
+import {HotelType} from "pages/main/MainPage_Types";
+import {S} from "pages/main/MainPage_Styles"
 import {TypeFilter} from "features";
 import {Pagination} from "components";
 
-
 export const MainPage = () => {
     const [hotels, setHotels] = useState<HotelType[]>([]);
-    const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
-    const [inputValue, setInputValue] = useState<OptionsType | null>(null);
-    const [selectedType, setSelectedType] = useState<string[]>([]);
+    const [selectedCountries, setSelectedCountries] = useState<string[]>([]);
+    const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
     const [filteredHotels, setFilteredHotels] = useState<HotelType[]>([]);
     const [selectedStars, setSelectedStars] = useState<number[]>([]);
     const [selectedNumReview, setSelectedNumReview] = useState<number | null>(null);
     const [reviewInputValue, setReviewInputValue] = useState('')
     const [selectedRangePrice, setSelectedRangePrice] = useState<[number, number]>([0, 100500]);
-    const [valueType, setValueType] = useState<OptionsType | null>(null);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -46,8 +43,8 @@ export const MainPage = () => {
 
     const handleApplyFilters = () => {
         const filtered = hotels.filter((hotel) =>
-            (selectedCountry ? hotel.country.toLowerCase() === selectedCountry : true) &&
-            (selectedType.length === 0 || selectedType.includes(hotel.type.toLowerCase())) &&
+            (selectedCountries.length === 0 || selectedCountries.includes(hotel.country)) &&
+            (selectedTypes.length === 0 || selectedTypes.includes(hotel.type)) &&
             (selectedStars.length === 0 || selectedStars.includes(hotel.stars)) &&
             (selectedNumReview ? hotel.reviews_amount >= selectedNumReview : true) &&
             (selectedRangePrice ? hotel.min_price >= selectedRangePrice[0] && hotel.min_price <= selectedRangePrice[1] : true)
@@ -56,10 +53,8 @@ export const MainPage = () => {
     };
 
     const handleResetFilters = () => {
-        setSelectedCountry(null);
-        setInputValue(null)
-        setValueType(null)
-        setSelectedType([]);
+        setSelectedCountries([]);
+        setSelectedTypes([]);
         setSelectedStars([]);
         setSelectedNumReview(null);
         setReviewInputValue('');
@@ -73,18 +68,16 @@ export const MainPage = () => {
                 <S.Wrapper>
                     <div>
                         <CountryFilter
-                            setSelectedCountry={setSelectedCountry}
-                            inputValue={inputValue}
-                            setInputValue={setInputValue}
+                            selectedCountries={selectedCountries}
+                            setSelectedCountries={setSelectedCountries}
+                        />
+                        <TypeFilter
+                            selectedTypes={selectedTypes}
+                            setSelectedTypes={setSelectedTypes}
                         />
                         <RatingFilter
                             selectedStars={selectedStars}
                             setSelectedStars={setSelectedStars}
-                        />
-                        <TypeFilter
-                            setSelectedType={setSelectedType}
-                            valueType={valueType}
-                            setValueType={setValueType}
                         />
                         <ReviewNumberFilter
                             setSelectedNumReview={setSelectedNumReview}
@@ -115,6 +108,8 @@ export const MainPage = () => {
         </S.Main>
     );
 };
+
+
 
 
 

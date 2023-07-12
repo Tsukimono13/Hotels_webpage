@@ -8,7 +8,7 @@ const Wrapper = styled.div`
   display: flex;
   gap: 40px;
   height: 100%;
-  margin: 40px 0 35px;
+  margin: 91px 0 35px;
   position: relative;
 `
 const ConfirmBtn = styled.button`
@@ -40,7 +40,7 @@ const CanselBtn = styled.button`
 const Advertisements = styled.div`
   display: flex;
   flex-direction: column;
-  margin-top: 34px;
+  margin-top: 35px;
   cursor: pointer;
 `
 export const S = {Main, Wrapper, ConfirmBtn, CanselBtn, Advertisements}

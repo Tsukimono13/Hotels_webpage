@@ -1,45 +1,61 @@
-import React from 'react';
+import React, {useState} from 'react';
+import {CustomInput} from "components/customInput/CustomInput";
+import search from "assets/icons/search.svg";
+import {FilterContainer} from "components";
 import {S} from "features/Filters_Styles"
-import ReactSelect from 'react-select';
-import {customStyles} from "styles/customStylesForSelect";
-import {OptionsType} from "pages/main/MainPage_Types";
-
+import cross from "assets/icons/cross.svg"
+import {CountryCheckbox} from "features/countryFilter";
 
 type PropsType = {
-    setSelectedCountry: (countries: string | null) => void
-    inputValue: OptionsType | null
-    setInputValue: (value: OptionsType | null) => void
+    selectedCountries: string[]
+    setSelectedCountries: (countries: string[]) => void
 }
+const country = ["Африка", "Болгария", "Греция", "Грузия", "Италия", "Россия", "Турция", "Япония"]
 
-const country: OptionsType[] = [
-    {value: 'африка', label: 'Африка'},
-    {value: 'болгария', label: 'Болгария'},
-    {value: 'греция', label: 'Греция'},
-    {value: 'дания', label: 'Дания'},
-    {value: 'италия', label: 'Италия'},
-    {value: 'мексика', label: 'Мексика'},
-    {value: 'китай', label: 'Китай'},
-    {value: 'япония', label: 'Япония'},
-]
+export const CountryFilter: React.FC<PropsType> = ({selectedCountries, setSelectedCountries}) => {
+    const [searchValue, setSearchValue] = useState('');
 
-export const CountryFilter: React.FC<PropsType> = ({setSelectedCountry, inputValue, setInputValue}) => {
-
-    const handleSearchCountry = (selectedOption: OptionsType | null) => {
-        setSelectedCountry(selectedOption?.value || null);
-        setInputValue(selectedOption);
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchValue(event.target.value.trim());
     };
+
+    const handlerClearInput = () => {
+        setSearchValue('');
+    };
+
+    const filteredCountries = country.filter((c) =>
+        c.toLowerCase().includes(searchValue.toLowerCase())
+    );
 
     return (
         <>
             <S.FilterTitle>Страна</S.FilterTitle>
-            <ReactSelect
-                options={country}
-                placeholder="Выберите страну..."
-                styles={customStyles}
-                isSearchable={true}
-                value={inputValue}
-                onChange={handleSearchCountry}
-            />
+            <CustomInput placeholder={'Поиск стран'}
+                         paddingL={'40px'}
+                         marginB={'0px'}
+                         value={searchValue}
+                         onChange={handleInputChange}/>
+            <S.SearchImg src={search}/>
+            {searchValue && (
+                <S.ClearButton onClick={handlerClearInput}><img src={cross} alt={'Clear input button'}/></S.ClearButton>
+            )}
+            <FilterContainer margin={'10px 0px 25px'}>
+                <S.CheckboxContainer>
+                    {filteredCountries.length === 0 ? (
+                        <S.ErrorText>К сожалению, по вашему запросу ничего не найдено :(</S.ErrorText>
+                    ) : (
+                        <ul>
+                            {filteredCountries.map((country, i) => (
+                                <CountryCheckbox
+                                    key={i}
+                                    country={country}
+                                    selectedCountries={selectedCountries}
+                                    setSelectedCountries={setSelectedCountries}/>
+                            ))}
+                        </ul>
+                    )}
+                </S.CheckboxContainer>
+            </FilterContainer>
         </>
     );
 };
